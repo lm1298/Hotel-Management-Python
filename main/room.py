@@ -10,8 +10,6 @@ class Room:
         self.price = price
         self.reservations = []
 
-
-
     def check_availability(self, checkin_date, checkout_date):
         # Iterate through each reservation for this room
         for reservation in self.reservations:
