@@ -1,4 +1,5 @@
 class Guest:
+    """"""
     def __init__(self, name, email, phone_number):
         self.name = name
         self.email = email
