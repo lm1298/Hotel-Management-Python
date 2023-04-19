@@ -1,4 +1,5 @@
 class Hotel:
+    """"""
     def _init_(self, name, address, phone_number):
         self.name = name
         self.address = address
@@ -23,3 +24,10 @@ class Hotel:
             if room.room_type == room_type and room.is_available():
                 available_rooms.append(room)
         return available_rooms
+
+    def get_bookings_for_room(self, room_number):
+        bookings = []
+        for booking in self.bookings:
+            if booking.room.number == room_number:
+                bookings.append(booking)
+        return bookings
