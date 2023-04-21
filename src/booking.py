@@ -102,6 +102,19 @@ class Booking:
 
     @staticmethod
     def get_bookings(file_path):
+        """
+        Get a list of all bookings from a CSV file.
+
+        Parameters
+        ----------
+        file_path : str
+        The path to the CSV file.
+
+        Returns
+        -------
+        List['Booking']
+        A list of all bookings in the CSV file.
+        """
         bookings = []
         with open(file_path, 'r') as file:
             reader = csv.reader(file)
@@ -133,6 +146,10 @@ class Booking:
 
 
 def main():
+    """
+    The main function that runs the hotel booking system.
+    """
+
     bookings = Booking.get_bookings('bookings.csv')
 
     while True:
@@ -143,7 +160,6 @@ def main():
         print("3. Modify booking")
         print("4. Cancel booking")
         print("5. Exit")
-
         choice = input("Enter your choice (1-5): ")
 
         if choice == "1":
@@ -162,6 +178,19 @@ def main():
             check_out_date = input("Enter check-out date (YYYY-MM-DD): ")
             num_guests = int(input("Enter number of guests: "))
 
+            # Check if the dates are in the correct format
+            try:
+                check_in = datetime.strptime(check_in_date, '%Y-%m-%d')
+                check_out = datetime.strptime(check_out_date, '%Y-%m-%d')
+            except ValueError:
+                print("Invalid date format. Please enter dates in the format YYYY-MM-DD.")
+                continue
+
+            # Check if the check-out date is after the check-in date
+            if check_out <= check_in:
+                print("Check-out date must be after check-in date.")
+                continue
+
             booking = Booking.make_booking(room_number, check_in_date, check_out_date, num_guests)
             bookings.append(booking)
             booking.save_booking_info('bookings.csv')
@@ -178,6 +207,19 @@ def main():
                 check_in_date = input("Enter new check-in date (YYYY-MM-DD): ")
                 check_out_date = input("Enter new check-out date (YYYY-MM-DD): ")
                 num_guests = int(input("Enter new number of guests: "))
+
+                # Check if the dates are in the correct format
+                try:
+                    check_in = datetime.strptime(check_in_date, '%Y-%m-%d')
+                    check_out = datetime.strptime(check_out_date, '%Y-%m-%d')
+                except ValueError:
+                    print("Invalid date format. Please enter dates in the format YYYY-MM-DD.")
+                    continue
+
+                # Check if the check-out date is after the check-in date
+                if check_out <= check_in:
+                    print("Check-out date must be after check-in date.")
+                    continue
 
                 booking.modify_booking(check_in_date, check_out_date, num_guests)
                 booking.save_booking_info('bookings.csv')
