@@ -1,7 +1,7 @@
 class Booking:
     """A class representing a booking made by a guest for a room at a hotel."""
 
-    def __init__(self, guest, room, checkin_date, checkout_date):
+    def __init__(self, guest, rooms, checkin_date, checkout_date):
         """
         Initialize a new Booking object.
 
@@ -12,9 +12,11 @@ class Booking:
         - checkout_date (date): The date the guest will check out.
         """
         self.guest = guest
-        self.room = room
+        self.room = rooms
+        self.bookings = []
         self.checkin_date = checkin_date
         self.checkout_date = checkout_date
+        self.is_available = None
 
     def get_occupancy_rate(self):
         """Returns the occupancy rate of the hotel."""
@@ -34,6 +36,28 @@ class Booking:
         """
         nights = (self.checkout_date - self.checkin_date).days
         return self.room.price * nights
+
+    def make_booking(self, guest, room, checkin_date, checkout_date):
+        """
+        Make a new booking and add it to the list of bookings for this object.
+
+        Args:
+        - guest (str): The name of the guest making the booking.
+        - room (Room): The room being booked.
+        - checkin_date (date): The date the guest will check in.
+        - checkout_date (date): The date the guest will check out.
+
+        Returns:
+        - Booking: The newly created Booking object.
+        - None: If the room is not available.
+        """
+        if room.is_available():
+            booking = Booking(guest, room, checkin_date, checkout_date)
+            self.bookings.append(booking)
+            room.book()
+            return booking
+        else:
+            return None
 
     def modify_booking(self, new_checkin_date, new_checkout_date):
         """
