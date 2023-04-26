@@ -8,6 +8,7 @@ Author: Prasanna
 
 """
 import csv
+from datetime import datetime
 
 
 class Room:
@@ -38,16 +39,23 @@ class Room:
         """
         self.is_booked = True
 
-    def add_room(self, name, capacity, price):
+    def add_room(rooms, number, capacity, price, is_booked):
         """
-           Add a new room to the list of rooms.
+        Add a new room to the list of rooms.
 
-           Args:
-               name (str): The name of the new room.
-               capacity (int): The maximum number of occupants for the new room.
-               price (float): The price per night for the new room.
+        Args:
+            rooms (list): The list of existing rooms.
+            number (int): The unique room number of the new room.
+            capacity (int): The maximum number of occupants for the new room.
+            price (float): The price per night for the new room.
+
+        Raises:
+            ValueError: If the room number already exists in the database.
         """
-        self.rooms.append(Room(name, capacity, price))
+        for room in rooms:
+            if room.number == number:
+                raise ValueError(f"Room with number {number} already exists in the database.")
+        rooms.append(Room(number, capacity, price, is_booked))
 
     def __str__(self):
         """
@@ -56,33 +64,8 @@ class Room:
             Returns:
                 str: The string representation of the room.
         """
-        return f"Room {self.number} (capacity: {self.capacity}, price: ${self.price}/night)"
-
-    @classmethod
-    def load_from_data_file(cls, filename):
-        """
-            Load room information from a CSV file.
-
-            Args:
-                filename (str): The name of the CSV file.
-
-            Returns:
-                list: A list of Room objects loaded from the CSV file.
-        """
-        rooms = []
-        with open(filename, "r") as file:
-            reader = csv.reader(file)
-            for row in reader:
-                try:
-                    room_number = int(row[0])
-                    capacity = int(row[1])
-                    price = float(row[2])
-                    is_booked = False if row[3].lower() == "false" else True
-                    room = cls(room_number, capacity, price, is_booked)
-                    rooms.append(room)
-                except ValueError:
-                    print(f"Invalid value for capacity for room {row[0]}")
-        return rooms
+        return f"Room {self.number} (capacity: {self.capacity}, price: ${self.price}/night," \
+               f" is_booked: {self.is_booked})"
 
     @staticmethod
     def view_all_rooms(rooms):
@@ -122,6 +105,32 @@ class Room:
             print(f"Room {room_number} not found!")
 
     @classmethod
+    def load_from_data_file(cls, filename):
+        """
+            Load room information from a CSV file.
+
+            Args:
+                filename (str): The name of the CSV file.
+
+            Returns:
+                list: A list of Room objects loaded from the CSV file.
+        """
+        rooms = []
+        with open(filename, "r") as file:
+            reader = csv.reader(file)
+            for row in reader:
+                try:
+                    room_number = int(row[0])
+                    capacity = int(row[1])
+                    price = float(row[2])
+                    is_booked = False if row[3].lower() == "false" else True
+                    room = cls(room_number, capacity, price, is_booked)
+                    rooms.append(room)
+                except ValueError:
+                    print(f"Invalid value for capacity for room {row[0]}")
+        return rooms
+
+    @classmethod
     def save_to_data_file(cls, rooms, filename):
         """
             Save room information to a CSV file.
@@ -159,13 +168,27 @@ def main():
             number = int(input("Enter the room number: "))
             capacity = int(input("Enter the room capacity: "))
             price = float(input("Enter the room price: "))
-            room = Room(number, capacity, price, False)
-            rooms.append(room)
-            print("Room added successfully!")
+            is_booked = bool(input("Enter room status: "))
+            try:
+                Room.add_room(rooms, number, capacity, price, is_booked)
+                print("Room added successfully!")
+            except ValueError as error:
+                print(error)
         elif choice == "3":
             number = int(input("Enter the room number: "))
             checkin_date = input("Enter the check-in date (YYYY-MM-DD): ")
             checkout_date = input("Enter the check-out date (YYYY-MM-DD): ")
+            try:
+                check_in = datetime.strptime(checkin_date, '%Y-%m-%d')
+                check_out = datetime.strptime(checkout_date, '%Y-%m-%d')
+            except ValueError:
+                print("Invalid date format. Please enter dates in the format YYYY-MM-DD.")
+                continue
+
+            # Check if the check-out date is after the check-in date
+            if check_out <= check_in:
+                print("Check-out date must be after check-in date.")
+                continue
             Room.book_room(rooms, number, checkin_date, checkout_date)
         elif choice == "4":
             Room.save_to_data_file(rooms, filename)
