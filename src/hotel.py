@@ -1,115 +1,83 @@
+from typing import List, Tuple
+
+from src.guest import Guest
+from src.room import Room
+
+
 class Hotel:
     """
-    A class to represent a hotel.
-
-    Attributes
-    ----------
-    name : str
-        The name of the hotel.
-    address : str
-        The address of the hotel.
-    phone_number : str
-        The phone number of the hotel.
-    rooms : list
-        A list of Room objects representing the rooms in the hotel.
-    bookings : list
-        A list of Booking objects representing the bookings made in the hotel.
-    staff : list
-        A list of Staff objects representing the staff members in the hotel.
+    A class representing a hotel with rooms and guests.
     """
 
-    def __init__(self, name, address, phone_number):
+    def _init_(self, name: str, num_rooms: int):
         """
-        Constructs all the necessary attributes for the hotel object.
+        Initializes a Hotel instance.
 
-        Parameters
-        ----------
-        name : str
-            The name of the hotel.
-        address : str
-            The address of the hotel.
-        phone_number : str
-            The phone number of the hotel.
+        :param name: The name of the hotel.
+        :param num_rooms: The number of rooms in the hotel.
         """
         self.name = name
-        self.address = address
-        self.phone_number = phone_number
+        self.num_rooms = num_rooms
         self.rooms = []
-        self.bookings = []
-        self.staff = []
+        self.guests = []
 
-    def add_room(self, room):
+    def check_in(self, guest: Guest, room_number: int, check_in_date: str, check_out_date: str) -> bool:
         """
-        Add a room to the list of rooms in the hotel.
+        Checks a guest into a room if the room is available.
 
-        Parameters
-        ----------
-        room : Room
-            A Room object representing the room to be added.
-
-        Returns
-        -------
-        bool
-            True if the room was added successfully, False otherwise.
+        :param guest: The guest to check in.
+        :param room_number: The number of the room to check in to.
+        :param check_in_date: The check-in date in YYYY-MM-DD format.
+        :param check_out_date: The check-out date in YYYY-MM-DD format.
+        :return: True if the guest was successfully checked in, False otherwise.
         """
-        self.rooms.append(room)
-
-    def remove_room(self, room):
-        """
-        Remove a room from the list of rooms in the hotel.
-
-        Parameters
-        ----------
-        room : Room
-            A Room object representing the room to be removed.
-
-        Returns
-        -------
-        bool
-            True if the room was removed successfully, False otherwise.
-        """
-        if room in self.rooms:
-            self.rooms.remove(room)
-            return True
-        else:
+        room = self._get_room(room_number)
+        if not room.is_available(check_in_date, check_out_date):
             return False
+        room.book()
+        guest.add_stay(room)
+        self.guests.append(guest)
+        return True
 
-    def find_available_rooms(self, room_type):
+    def check_out(self, guest: Guest) -> Tuple[bool, int]:
         """
-        Find all available rooms of a given room type.
+        Checks a guest out of their current room and calculates the bill.
 
-        Parameters
-        ----------
-        room_type : str
-            A string representing the room type.
+        :param guest: The guest to check out.
+        :return: A tuple containing a bool indicating whether the guest was
+        successfully checked out and the bill amount.
+        """
+        room = guest.get_last_stay()
+        if not room:
+            return False, 0
+        check_in_date, check_out_date = room.get_dates(guest)
+        bill = room.get_price(check_in_date, check_out_date)
+        room.check_out(guest)
+        return True, bill
 
-        Returns
-        -------
-        list
-            A list of Room objects representing the available rooms of the given room type.
+    def get_available_rooms(self, check_in_date: str, check_out_date: str) -> \
+    List[int]:
+        """
+        Returns a list of available room numbers for a given date range.
+
+        :param check_in_date: The check-in date in YYYY-MM-DD format.
+        :param check_out_date: The check-out date in YYYY-MM-DD format.
+        :return: A list of available room numbers.
         """
         available_rooms = []
         for room in self.rooms:
-            if room.room_type == room_type and room.is_available():
-                available_rooms.append(room)
+            if room.is_available(check_in_date, check_out_date):
+                available_rooms.append(room.number)
         return available_rooms
 
-    def get_bookings_for_room(self, room_number):
+    def _get_room(self, room_number: int) -> Room:
         """
-        Get all bookings made for a given room.
+        Returns the room instance for a given room number.
 
-        Parameters
-        ----------
-        room_number : str
-            A string representing the room number.
-
-        Returns
-        -------
-        list
-            A list of Booking objects representing the bookings made for the given room.
+        :param room_number: The room number to look up.
+        :return: The Room instance for the given room number.
         """
-        bookings = []
-        for booking in self.bookings:
-            if booking.room.number == room_number:
-                bookings.append(booking)
-        return bookings
+        for room in self.rooms:
+            if room.number == room_number:
+                return room
+        raise ValueError(f"Room {room_number} not found in hotel.")
