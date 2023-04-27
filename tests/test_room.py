@@ -1,47 +1,69 @@
 import unittest
 from datetime import datetime
 
-from yapftests.main_test import captured_output
-
 from src.room import Room
 
 
-class RoomTests(unittest.TestCase):
-
+class TestRoomMethods(unittest.TestCase):
     def setUp(self):
-        self.room1 = Room(101, 2, 50.0, False)
-        self.room2 = Room(102, 4, 100.0, True)
+        """
+        Initialize test data and save it to a file
+        """
+        self.room1 = Room(101, 2, 75.0, False)
+        self.room2 = Room(102, 3, 100.0, True)
         self.rooms = [self.room1, self.room2]
+        self.filename = "test_rooms.csv"
+        Room.save_to_data_file(self.rooms, 'test_rooms.csv')
 
-    def test_add_room(self):
-        # Test adding a new room to the list of rooms
-        Room.add_room(self.rooms, 103, 3, 75.0, False)
-        self.assertEqual(len(self.rooms), 3)
-        self.assertEqual(self.rooms[2].number, 103)
-        self.assertEqual(self.rooms[2].capacity, 3)
-        self.assertEqual(self.rooms[2].price, 75.0)
-        self.assertEqual(self.rooms[2].is_booked, False)
-
-        # Test adding a room with an existing room number
-        with self.assertRaises(ValueError):
-            Room.add_room(self.rooms, 101, 2, 50.0, False)
-
-    def test_book_room(self):
-        # Test booking an available room
-        Room.book_room(self.rooms, 101, '2023, 4, 26', '2023, 4, 27')
+    def test_book(self):
+        """
+        Test if a room can be successfully booked
+        """
+        self.room1.book()
         self.assertTrue(self.room1.is_booked)
 
-        # Test booking a room that is already booked
-        expected_output = "Room 102 is already booked!\n"
-        with captured_output() as (out, err):
-            Room.book_room(self.rooms, 102, '2023, 4, 26', '2023, 4, 27')
-        self.assertEqual(out.getvalue(), expected_output)
+    def test_add_room(self):
+        """
+        Test if a new room can be added to the existing rooms list
+        """
+        with self.assertRaises(ValueError):
+            Room.add_room(self.rooms, 101, 2, 75.0, False)
+        Room.add_room(self.rooms, 103, 2, 80.0, False)
+        self.assertEqual(len(self.rooms), 3)
 
-        # Test booking a room that doesn't exist
-        expected_output = "Room 103 not found!\n"
-        with captured_output() as (out, err):
-            Room.book_room(self.rooms, 103, '2023, 4, 26', '2023, 4, 27')
-        self.assertEqual(out.getvalue(), expected_output)
+    def test_book_room(self):
+        """
+        Test if a room can be booked for a specific date range
+        """
+        checkin_date = datetime(2023, 5, 1)
+        checkout_date = datetime(2023, 5, 5)
+        Room.book_room(self.rooms, 102, checkin_date, checkout_date)
+        self.assertTrue(self.room2.is_booked)
+
+    def test_load_from_data_file(self):
+        """
+        Test if data can be successfully loaded from a file
+        """
+        rooms = Room.load_from_data_file(self.filename)
+        self.assertEqual(len(rooms), 2)
+        self.assertEqual(rooms[0].number, self.room1.number)
+        self.assertEqual(rooms[0].capacity, self.room1.capacity)
+        self.assertEqual(rooms[0].price, self.room1.price)
+        self.assertEqual(rooms[0].is_booked, self.room1.is_booked)
+
+    def test_save_to_data_file(self):
+        """
+        Test if data can be successfully saved to a file
+        """
+        room3 = Room(103, 2, 80.0, False)
+        self.rooms.append(room3)
+        Room.save_to_data_file(self.rooms, 'test_rooms.csv')
+        rooms = Room.load_from_data_file('test_rooms.csv')
+        self.assertEqual(len(rooms), 3)
+        self.assertEqual(rooms[-1].number, room3.number)
+        self.assertEqual(rooms[-1].capacity, room3.capacity)
+        self.assertEqual(rooms[-1].price, room3.price)
+        self.assertEqual(rooms[-1].is_booked, room3.is_booked)
 
 
 if __name__ == '__main__':

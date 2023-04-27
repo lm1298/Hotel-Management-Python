@@ -107,18 +107,21 @@ class Room:
     @classmethod
     def load_from_data_file(cls, filename):
         """
-            Load room information from a CSV file.
+        Load room information from a CSV file.
 
-            Args:
-                filename (str): The name of the CSV file.
+        Args:
+            filename (str): The name of the CSV file.
 
-            Returns:
-                list: A list of Room objects loaded from the CSV file.
+        Returns:
+            list: A list of Room objects loaded from the CSV file.
         """
         rooms = []
         with open(filename, "r") as file:
             reader = csv.reader(file)
             for row in reader:
+                if len(row) < 4:
+                    print(f"Invalid row in {filename}: {row}")
+                    continue
                 try:
                     room_number = int(row[0])
                     capacity = int(row[1])
