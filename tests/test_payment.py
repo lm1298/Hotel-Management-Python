@@ -1,30 +1,34 @@
-from src.Payment import process_payment_paid, process_payment_unpaid, Payment, Guest
 import unittest
+from sample.guest import Guest
+from sample.payment import Payment
 
 
 class TestPayment(unittest.TestCase):
+    """
+    Unit tests for the Payment class.
+    """
 
-    def test_process_payment_unpaid(self):
-        actual_output = process_payment_unpaid("John Smith", 100)
-        expected_output = "Guest: John Smith, Amount: $100, Status: Unpaid"
-        self.assertEqual(actual_output, expected_output)
+    def setUp(self):
+        """
+        Sets up a new Payment object and a corresponding Guest object for testing.
+        """
+        self.guest = Guest("John Doe", "john.doe@example.com", "555-555-1234")
+        self.payment = Payment(self.guest, 100.0)
 
-    def test_process_payment_paid(self):
-        actual_output = process_payment_paid("Dan Niles", 350)
-        expected_output = "Guest: Dan Niles, Amount: $350, Status: Paid"
-        self.assertEqual(actual_output, expected_output)
+    def test_make_payment(self):
+        """
+        Tests that make_payment() sets the is_paid flag to True.
+        """
+        self.payment.make_payment()
+        self.assertTrue(self.payment.is_paid)
 
-    def test_set_paid(self):
-        guest = Guest("Dan Niles")
-        payment = Payment(guest, 350)
-        payment.make_payment()
-        self.assertTrue(payment.is_paid)
+    def test_get_payment_details(self):
+        """
+        Tests that get_payment_details() returns a string with the guest name, payment amount, and payment status.
+        """
+        expected = "Guest name: John Doe\nPayment amount: 100.0\nPayment status: not paid"
+        self.assertEqual(self.payment.get_payment_details(), expected)
 
-    def test_set_unpaid(self):
-        guest = Guest("Dan Niles")
-        payment = Payment(guest, 350)
-        payment.is_paid = False
-        self.assertFalse(payment.is_paid)
 
 if __name__ == '__main__':
     unittest.main()

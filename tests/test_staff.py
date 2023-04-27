@@ -1,38 +1,50 @@
+import csv
 import unittest
-from src.Staff import Staff
+
+from src.staff import Staff
+
 
 class TestStaff(unittest.TestCase):
 
-    def test_init(self):
-        # Test creating Staff objects using the CSV data
-        staff1 = Staff("John Doe", "Receptionist", 2500, "Shift: 8-12")
-        self.assertEqual(staff1.name, "John Doe")
-        self.assertEqual(staff1.position, "Receptionist")
-        self.assertEqual(staff1.salary, 2500)
-        self.assertEqual(staff1.shift, "Shift: 8-12")
+    @classmethod
+    def setUpClass(cls):
+        # Load staff details from test_staff.csv
+        cls.staff_list = Staff.load_staff_details('test_staff.csv')
 
-        staff2 = Staff("Jane Smith", "Housekeeper", 2000, "Shift: 12-6")
-        self.assertEqual(staff2.name, "Jane Smith")
-        self.assertEqual(staff2.position, "Housekeeper")
-        self.assertEqual(staff2.salary, 2000)
-        self.assertEqual(staff2.shift, "Shift: 12-6")
+    def test_get_salary(self):
+        """
+        Test the `get_salary` method of the `Staff` class.
 
-        staff3 = Staff("Bob Johnson", "Chef", 3500, "Shift: 6-1")
-        self.assertEqual(staff3.name, "Bob Johnson")
-        self.assertEqual(staff3.position, "Chef")
-        self.assertEqual(staff3.salary, 3500)
-        self.assertEqual(staff3.shift, "Shift: 6-1")
+        Checks that the method returns the expected salary for a staff member.
+        """
+        staff_member = self.staff_list[0]
+        expected_salary = 3000.5
+        self.assertEqual(staff_member.get_salary(), expected_salary)
 
-    def test_str(self):
-        # Test the string representation of Staff objects
-        staff1 = Staff("John Doe", "Receptionist", 2500, "Shift: 8-12")
-        self.assertEqual(str(staff1), "John Doe (Receptionist, $2500, Shift: 8-12)")
+    def test_update_salary(self):
+        """
+        Test the `update_salary` method of the `Staff` class.
 
-        staff2 = Staff("Jane Smith", "Housekeeper", 2000, "Shift: 12-6")
-        self.assertEqual(str(staff2), "Jane Smith (Housekeeper, $2000, Shift: 12-6)")
+        Checks that the method updates the salary of a staff member correctly.
+        """
+        staff_member = self.staff_list[0]
+        new_salary = 600
+        staff_member.update_salary(staff_member.name, new_salary)
+        self.assertEqual(staff_member.get_salary(), new_salary)
 
-        staff3 = Staff("Bob Johnson", "Chef", 3500, "Shift: 6-1")
-        self.assertEqual(str(staff3), "Bob Johnson (Chef, $3500, Shift: 6-1)")
+    def test_update_working_hours(self):
+        """
+        Test the `update_working_hours` method of the `Staff` class.
+
+        Checks that the method updates the working hours of a staff member correctly.
+        """
+        staff_member = self.staff_list[0]
+        old_hours = staff_member.working_hours
+        additional_hours = 10.0
+        staff_member.update_working_hours(additional_hours)
+        self.assertEqual(staff_member.working_hours, old_hours + additional_hours)
+
 
 if __name__ == '__main__':
+    # Run tests
     unittest.main()
