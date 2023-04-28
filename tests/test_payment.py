@@ -1,6 +1,6 @@
 import unittest
 
-from src.Payment import Payment
+from src.payment import Payment
 from src.guest import Guest
 
 

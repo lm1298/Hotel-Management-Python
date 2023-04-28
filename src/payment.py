@@ -10,7 +10,7 @@ class Payment:
     is_paid (bool): A boolean flag indicating whether the payment has been made or not.
     """
 
-    def init(self, guest, amount):
+    def __init__(self, guest, amount):
         """
         Initializes a new Payment object with the given guest and payment amount.
 
