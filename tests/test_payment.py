@@ -1,6 +1,6 @@
 import unittest
-from sample.guest import Guest
-from sample.payment import Payment
+from src.guest import Guest
+from src.payment import Payment
 
 
 class TestPayment(unittest.TestCase):
