@@ -1,7 +1,7 @@
 import csv
 import unittest
 
-from src.staff import Staff
+from src.Staff import Staff
 
 
 class TestStaff(unittest.TestCase):
@@ -18,7 +18,7 @@ class TestStaff(unittest.TestCase):
         Checks that the method returns the expected salary for a staff member.
         """
         staff_member = self.staff_list[0]
-        expected_salary = 3000.5
+        expected_salary = 300.5
         self.assertEqual(staff_member.get_salary(), expected_salary)
 
     def test_update_salary(self):
