@@ -1,126 +1,66 @@
-import csv
+from src.guest import Guest
 
-class Guest:
-    """
-    A class representing a guest.
-
-    Attributes:
-    -----------
-    name : str
-        The name of the guest.
-    """
-
-    def __init__(self, name):
-        self.name = name
 
 class Payment:
     """
-    A class representing a payment.
-
-    Attributes:
-    guest : Guest
-        The guest who made the payment.
-    amount : int
-        The amount of the payment.
-    is_paid : bool, optional
-        Whether the payment is paid or not, default is False.
+    Class to handle payment transactions made by guests.
+        Attributes:
+    guest (Guest): Guest object representing the guest making the payment.
+    amount (float): The amount of the payment.
+    is_paid (bool): A boolean flag indicating whether the payment has been made or not.
     """
-    def __init__(self, guest, amount):
+
+    def init(self, guest, amount):
+        """
+        Initializes a new Payment object with the given guest and payment amount.
+
+        Args:
+        guest (Guest): Guest object representing the guest making the payment.
+        amount (float): The amount of the payment.
+        """
         self.guest = guest
         self.amount = amount
         self.is_paid = False
 
     def make_payment(self):
         """
-        Updates the payment status to "paid" and prints a message.
+        Simulates a payment process and updates the payment status to "paid" once payment is successful.
+
+        Returns:
+        None
         """
         self.is_paid = True
-        print(f"{self.guest.name} has paid {self.amount}.")
+        print(f"{self.guest.name} has successfully paid {self.amount}.")
 
     def get_payment_details(self):
         """
-        Returns the payment details.
+        Returns a string representation of the payment details.
+
+        Returns:
+        str: A string containing the guest name, payment amount, and payment status.
         """
-        if self.is_paid:
-            status = "Paid"
-        else:
-            status = "Unpaid"
-        return f"Guest: {self.guest.name}, Amount: ${self.amount}, Status: {status}"
+        payment_status = "paid" if self.is_paid else "not paid"
+        return f"Guest name: {self.guest.name}\nPayment amount: {self.amount}\nPayment status: {payment_status}"
 
-def process_payment_unpaid(guest_name, amount):
-    """
-    Creates a new unpaid payment.
 
-    Parameters:
-    guest_name : str
-        The name of the guest.
-    amount : int
-        The amount of the payment.
+def main():
+    name = input("Enter guest name: ")
+    email = input("Enter guest email: ")
+    phone_number = input("Enter guest phone number: ")
 
-    Returns:
-    str
-        The payment details.
-    """
-    guest = Guest(guest_name)
+    while True:
+        try:
+            amount = float(input("Enter payment amount: "))
+            break
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+
+    guest = Guest(name, email, phone_number)
     payment = Payment(guest, amount)
-    return payment.get_payment_details()
 
-def process_payment_paid(guest_name, amount):
-    """
-    Creates a new paid payment.
-
-    Parameters:
-    -----------
-    guest_name : str
-        The name of the guest.
-    amount : int
-        The amount of the payment.
-
-    Returns:
-    str
-        The payment details.
-    """
-    guest = Guest(guest_name)
-    payment = Payment(guest, amount)
     payment.make_payment()
-    return payment.get_payment_details()
-
-def paid():
-    """
-    Retrieves all paid payments from the CSV file.
-
-    Returns:
-    str
-        A str of payment details for paid payments.
-    """
-    with open("payment.csv", "r") as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            guest_name = row["Name"]
-            amount = int(row["Amount"])
-            status = row["Status"]
-            if status == "Paid":
-                test2 = process_payment_paid(guest_name, amount)
-                print(test2)
-
-def unpaid():
-    """
-    Retrieves all unpaid payments from the CSV file.
-
-    Returns:
-        str
-        A str of payment details for unpaid payments.
-    """
-    with open("payment.csv", "r") as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            guest_name = row["Name"]
-            amount = int(row["Amount"])
-            status = row["Status"]
-            if status == "Unpaid":
-                test1 = process_payment_unpaid(guest_name, amount)
-                print(test1)
+    print(payment.get_payment_details())
 
 
-paid()
-unpaid()
+if __name__ == "__main__":
+    main()
