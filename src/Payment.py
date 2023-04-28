@@ -62,5 +62,5 @@ def main():
     print(payment.get_payment_details())
 
 
-if name == "main":
+if __name__ == "__main__":
     main()
