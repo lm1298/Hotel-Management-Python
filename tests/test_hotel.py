@@ -1,46 +1,57 @@
 import unittest
-from datetime import date
+
 from src.hotel import Hotel
-from src.guest import Guest
-from src.room import Room
+
 
 class TestHotel(unittest.TestCase):
     def setUp(self):
-        self.hotel = Hotel("Test Hotel", 10)
+        self.hotel = Hotel("Grand India", "New York", 100, 5)
 
-    def test_check_in(self):
-        guest1 = Guest("John", "Doe")
-        guest2 = Guest("Jane", "Doe")
+    def test_add_amenity(self):
+        """
+        Test that the add_amenity method adds an amenity to the hotel's list of amenities.
+        """
+        self.hotel.add_amenity("Pool")
+        self.assertEqual(self.hotel.amenities, ["Pool"])
 
-        # Check in to available room
-        self.assertTrue(self.hotel.check_in(guest1, 1, "2023-05-01", "2023-05-03"))
+    def test_remove_amenity(self):
+        """
+        Test that the remove_amenity method removes an amenity from the hotel's list of amenities.
+        """
+        self.hotel.amenities = ["Pool", "Spa"]
+        self.hotel.remove_amenity("Spa")
+        self.assertEqual(self.hotel.amenities, ["Pool"])
 
-        # Check in to unavailable room
-        self.assertFalse(self.hotel.check_in(guest2, 1, "2023-05-01", "2023-05-03"))
+    def test_get_info(self):
+        """
+        Test that the get_info method returns a string representation of the hotel's information.
+        """
+        self.hotel.amenities = ["Pool", "Spa"]
+        info = self.hotel.get_info()
+        expected_info = "Grand India (5 stars) in New York with 100 rooms and amenities: Pool, Spa"
+        self.assertEqual(info, expected_info)
 
-    def test_check_out(self):
-        guest1 = Guest("John", "Doe")
-        guest2 = Guest("Jane", "Doe")
+    def test_save_info(self):
+        """
+        Test that the save_info method saves the hotel's information to a CSV file.
+        """
+        self.hotel.amenities = ["Pool", "Spa"]
+        filename = "test_hotel.csv"
+        self.hotel.save_info(filename)
+        with open(filename, 'r') as f:
+            lines = f.readlines()
+            expected_lines = ['Name,Location,Num Rooms,Stars,Amenities\n', 'Grand India,New York,100,5,"Pool, Spa"\n']
+            self.assertEqual(lines, expected_lines)
 
-        # Check out with no stays
-        self.assertFalse(self.hotel.check_out(guest1))
+    def test_remove_nonexistent_amenity(self):
+        """
+        Test that the remove_amenity method does nothing if the amenity to remove is not in the hotel's list of amenities.
+        """
+        self.hotel.amenities = ["Pool"]
+        self.hotel.remove_amenity("Spa")
+        self.assertEqual(self.hotel.amenities, ["Pool"])
 
-        # Check out with stay
-        self.hotel.check_in(guest1, 1, "2023-05-01", "2023-05-03")
-        self.assertEqual(self.hotel.check_out(guest1), (True, 200))
 
-    def test_get_available_rooms(self):
-        room1 = Room(1, 100)
-        room2 = Room(2, 200)
-        self.hotel.rooms = [room1, room2]
+if __name__ == '__main__':
+    unittest.main()
 
-        # No available rooms
-        self.assertEqual(self.hotel.get_available_rooms("2023-05-01", "2023-05-03"), [])
-
-        # One available room
-        room1.book()
-        self.assertEqual(self.hotel.get_available_rooms("2023-05-01", "2023-05-03"), [2])
-
-        # Both rooms available
-        room2.book()
-        self.assertEqual(self.hotel.get_available_rooms("2023-05-01", "2023-05-03"), [])
