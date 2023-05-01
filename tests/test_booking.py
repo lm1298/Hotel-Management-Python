@@ -45,6 +45,15 @@ class TestBooking(unittest.TestCase):
         self.assertIsNone(booking.check_out_date)
         self.assertIsNone(booking.num_guests)
 
+    def test_get_bookings(self):
+        # Test that get_bookings returns a list of Booking objects from the CSV file
+        bookings = Booking.get_bookings('test_bookings.csv')
+        self.assertIsInstance(bookings[0], Booking)
+        self.assertEqual(bookings[0].room_number, 101)
+        self.assertEqual(bookings[0].check_in_date, '2023-05-01')
+        self.assertEqual(bookings[0].check_out_date, '2023-05-03')
+        self.assertEqual(bookings[0].num_guests, 2)
+
 
 if __name__ == '__main__':
     unittest.main()
