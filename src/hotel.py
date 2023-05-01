@@ -1,83 +1,84 @@
-from typing import List, Tuple
-
-from src.guest import Guest
-from src.room import Room
+import csv
 
 
 class Hotel:
-    """
-    A class representing a hotel with rooms and guests.
-    """
-
-    def _init_(self, name: str, num_rooms: int):
+    def __init__(self, name, location, num_rooms, stars):
         """
-        Initializes a Hotel instance.
-
-        :param name: The name of the hotel.
-        :param num_rooms: The number of rooms in the hotel.
+        Initialize a new instance of the Hotel class.
+        Args:
+            name (str): The name of the hotel.
+            location (str): The location of the hotel.
+            num_rooms (int): The number of rooms in the hotel.
+            stars (int): The star rating of the hotel.
         """
         self.name = name
+        self.location = location
         self.num_rooms = num_rooms
-        self.rooms = []
-        self.guests = []
+        self.stars = stars
+        self.amenities = []
 
-    def check_in(self, guest: Guest, room_number: int, check_in_date: str, check_out_date: str) -> bool:
-        """
-        Checks a guest into a room if the room is available.
+    def add_amenity(self, amenity):
+        """Add an amenity to the hotel."""
+        self.amenities.append(amenity)
 
-        :param guest: The guest to check in.
-        :param room_number: The number of the room to check in to.
-        :param check_in_date: The check-in date in YYYY-MM-DD format.
-        :param check_out_date: The check-out date in YYYY-MM-DD format.
-        :return: True if the guest was successfully checked in, False otherwise.
-        """
-        room = self._get_room(room_number)
-        if not room.is_available(check_in_date, check_out_date):
-            return False
-        room.book()
-        guest.add_stay(room)
-        self.guests.append(guest)
-        return True
+    def remove_amenity(self, amenity):
+        """Remove an amenity from the hotel."""
+        if amenity in self.amenities:
+            self.amenities.remove(amenity)
+        else:
+            print(f"{amenity} is not an amenity of {self.name}")
 
-    def check_out(self, guest: Guest) -> Tuple[bool, int]:
-        """
-        Checks a guest out of their current room and calculates the bill.
+    def get_info(self):
+        """Return a string representation of the hotel information."""
+        return f"{self.name} ({self.stars} stars) in {self.location} with {self.num_rooms} rooms and amenities: {', '.join(self.amenities)}"
 
-        :param guest: The guest to check out.
-        :return: A tuple containing a bool indicating whether the guest was
-        successfully checked out and the bill amount.
+    def save_info(self, filename):
         """
-        room = guest.get_last_stay()
-        if not room:
-            return False, 0
-        check_in_date, check_out_date = room.get_dates(guest)
-        bill = room.get_price(check_in_date, check_out_date)
-        room.check_out(guest)
-        return True, bill
+           Save the hotel information to a CSV file.
 
-    def get_available_rooms(self, check_in_date: str, check_out_date: str) -> \
-    List[int]:
+           Args:
+               filename (str): The name of the file to save the information to.
         """
-        Returns a list of available room numbers for a given date range.
+        with open(filename, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['Name', 'Location', 'Num Rooms', 'Stars', 'Amenities'])
+            writer.writerow([self.name, self.location, self.num_rooms, self.stars, ', '.join(self.amenities)])
+        print(f"{self.name} info saved to {filename}.")
 
-        :param check_in_date: The check-in date in YYYY-MM-DD format.
-        :param check_out_date: The check-out date in YYYY-MM-DD format.
-        :return: A list of available room numbers.
-        """
-        available_rooms = []
-        for room in self.rooms:
-            if room.is_available(check_in_date, check_out_date):
-                available_rooms.append(room.number)
-        return available_rooms
 
-    def _get_room(self, room_number: int) -> Room:
-        """
-        Returns the room instance for a given room number.
+def main():
+    hotel = Hotel("Grand Hotel", "New York", 100, 5)
 
-        :param room_number: The room number to look up.
-        :return: The Room instance for the given room number.
-        """
-        for room in self.rooms:
-            if room.number == room_number:
-                return room
-        raise ValueError(f"Room {room_number} not found in hotel.")
+    print("Welcome to the hotel information system!")
+
+    while True:
+        print("\nWhat would you like to do?")
+        print("1. View hotel information")
+        print("2. Add an amenity")
+        print("3. Remove an amenity")
+        print("4. Save hotel information to file")
+        print("5. Quit")
+
+        choice = input("Enter your choice (1-5): ")
+
+        if choice == "1":
+            print(hotel.get_info())
+        elif choice == "2":
+            amenity = input("Enter the amenity you would like to add: ")
+            hotel.add_amenity(amenity)
+            print(f"{amenity} added to {hotel.name}")
+        elif choice == "3":
+            amenity = input("Enter the amenity you would like to remove: ")
+            hotel.remove_amenity(amenity)
+        elif choice == "4":
+            filename = "hotel.csv"
+            hotel.save_info(filename)
+        elif choice == "5":
+            print("Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please enter a number between 1 and 5.")
+
+
+if __name__ == '__main__':
+    main()
