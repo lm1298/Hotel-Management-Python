@@ -19,12 +19,23 @@ class Staff:
     """
 
     def __init__(self, name, position, salary, working_hours):
+        """
+            Initialize a new Room object with the given attributes.
+
+            Parameters
+                ----------
+            name : str,the name of the staff member
+            position (str): the position of the staff member
+            salary (float): the salary of the staff member
+            hours_worked (float): the number of hours the staff member has worked
+        """
         self.name = name
         self.position = position
         self.salary = salary
         self.working_hours = working_hours
 
     def __str__(self):
+        """Represent staff object in string format"""
         return f"{self.name} ({self.position}, ${self.salary:.2f})"
 
     def get_salary(self):
@@ -37,7 +48,7 @@ class Staff:
         """
         Returns a string representation of the staff member's details.
         """
-        return f"{self.name}, Position: {self.position}, Salary: ${self.salary:.2f}, Working hours: ${self.working_hours}"
+        return f"{self.name}, Position: {self.position}, Salary: ${self.salary:.2f}, Working hours: {self.working_hours}"
 
     @staticmethod
     def view_all_staff_details(staff_list):
@@ -71,7 +82,7 @@ class Staff:
         Args:
         - hours (float): the number of hours worked by the staff member
         """
-        self.working_hours += hours
+        self.working_hours = hours
         print(f"Hours worked updated to {self.working_hours} for {self.name}")
 
     @classmethod
@@ -103,7 +114,7 @@ class Staff:
 
 
 def main():
-    # read staff data from CSV file
+    """read staff data from CSV file"""
     with open('staff.csv') as file:
         reader = csv.reader(file)
         staff_data = [row for row in reader]
