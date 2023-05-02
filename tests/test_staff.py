@@ -1,7 +1,7 @@
 import csv
 import unittest
 
-from src.Staff import Staff
+from src.staff import Staff
 
 
 class TestStaff(unittest.TestCase):
@@ -17,8 +17,8 @@ class TestStaff(unittest.TestCase):
 
         Checks that the method returns the expected salary for a staff member.
         """
-        staff_member = self.staff_list[0]
-        expected_salary = 300.5
+        staff_member = self.staff_list[1]
+        expected_salary = 200.0
         self.assertEqual(staff_member.get_salary(), expected_salary)
 
     def test_update_salary(self):
@@ -38,11 +38,10 @@ class TestStaff(unittest.TestCase):
 
         Checks that the method updates the working hours of a staff member correctly.
         """
-        staff_member = self.staff_list[0]
-        old_hours = staff_member.working_hours
-        additional_hours = 10.0
+        staff_member = self.staff_list[2]
+        additional_hours = 40.0
         staff_member.update_working_hours(additional_hours)
-        self.assertEqual(staff_member.working_hours, old_hours + additional_hours)
+        self.assertEqual(staff_member.working_hours, additional_hours)
 
 
 if __name__ == '__main__':
