@@ -8,8 +8,7 @@ John Gant
 
 ### Outline of Hotel Management System Project:
 #### Project Overview: 
-* The hotel management project aims to create a system that
-manages room bookings, staff, payment, and guest information for a hotel.
+* The hotel management project aims to create a system that manages room bookings, staff, payment, and guest information for a hotel.
 * The software includes six classes that offer specific functions to manage hotel operations, 
 such as adding and viewing rooms, handling guest stays, updating staff details, making payments, and booking rooms.
 * The project includes six classes - Room, Guest, Staff, Payment, Booking  and Hotel.
